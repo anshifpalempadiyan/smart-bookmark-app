@@ -48,7 +48,7 @@ const AddBookmarkForm = () => {
             onSubmit={handleSubmit}
             className="bg-white p-4 rounded-md border space-y-3"
         >
-            <h2 className="text-lg font-semibold text-black">Add Bookmark</h2>
+            <h2 className="text-lg font-semibold text-black ">Add Bookmark</h2>
 
             <input
                 type="text"
@@ -69,7 +69,7 @@ const AddBookmarkForm = () => {
             <button
                 type="submit"
                 disabled={loading}
-                className="bg-black text-white px-4 py-2 rounded disabled:opacity-50"
+                className="bg-black text-white px-4 py-2 rounded disabled:opacity-50 cursor-pointer "
             >
                 {loading ? "Adding..." : "Add Bookmark"}
             </button>
