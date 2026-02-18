@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { supabase } from "../lib/supabaseClient"
 import type { User } from "@supabase/supabase-js"
 import AddBookmarkForm from "../components/AddBookmarkForm"
+import BookmarkList from "../components/Bookmark"
 
 
 const DashboardPage = () => {
@@ -67,6 +68,7 @@ const DashboardPage = () => {
 
                 {/* Add Bookmark Component */}
                 <AddBookmarkForm />
+                <BookmarkList />
             </main>
         </div>
     )
