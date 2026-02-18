@@ -5,9 +5,12 @@ import { supabase } from "../lib/supabaseClient";
 const LoginPage = () => {
     const handleGoogleLogin = async () => {
         await supabase.auth.signInWithOAuth({
-            provider : "google",
-            options : {
-                redirectTo : "http://localhost:3000/dashboard"
+            provider: "google",
+            options: {
+                redirectTo: "http://localhost:3000/dashboard",
+                // queryParams: {
+                //     prompt: "select_account",
+                // },
             }
         })
     }
