@@ -16,17 +16,44 @@ const BookmarkList = () => {
 
     useEffect(() => {
         const fetchBookmarks = async () => {
-            const { data, error } = await supabase.from("bookmarks").select("id , title , url").order("created_at", { ascending: false })
+            const { data } = await supabase.from("bookmarks").select("id , title , url").order("created_at", { ascending: false })
 
-            if (!error && data) {
-                setBookmarks(data)
-            }
-
+            setBookmarks(data || [])
             setLoading(false)
         }
 
         fetchBookmarks()
+
+        const channel = supabase.channel("bookmarks-realtime").on("postgres_changes",
+            { event: "INSERT", schema: "public", table: "bookmarks" },
+            async (payload) => {
+                const { data: { user } } = await supabase.auth.getUser()
+                if (user && payload.new.user_id === user.id) {
+                    setBookmarks((prev) => [payload.new as Bookmark, ...prev])
+                }
+            }
+        )
+            .on("postgres_changes",
+                { event: "DELETE", schema: "public", table: "bookmarks" },
+                (payload) => {
+                    setBookmarks((prev) => prev.filter((b) => b.id !== payload.old.id))
+                }
+            )
+            .subscribe()
+
+        return () => {
+            supabase.removeChannel(channel)
+        }
+
     }, [])
+
+    const handleDelete = async ( id : string , title : string ) => {
+        const confirmed = window.confirm(` Are you sure you want to delete "${title}"?`)
+
+        if ( !confirmed ) return
+        
+        await supabase.from("bookmarks").delete().eq("id",id)
+    }
 
     if (loading) {
         return <p className="text-gray-500">Loading bookmarks...</p>;
@@ -54,6 +81,12 @@ const BookmarkList = () => {
                             {bookmark.url}
                         </a>
                     </div>
+                    <button
+                        onClick={() => handleDelete(bookmark.id , bookmark.title )}
+                        className="text-sm bg-red-600 hover:underline text-white p-3 rounded cursor-pointer"
+                    >
+                        Delete
+                    </button>
                 </div>
             ))}
         </div>
